@@ -1,0 +1,58 @@
+{
+  "name": "frontend-stars-my-destiny",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "next build",
+    "start": "next start",
+    "gen": "graphql-codegen --config codegen.yml",
+    "lint": "eslint .",
+    "lint:finx": "eslint . --fix",
+    "type-check": "tsc --pretty --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elfiyang16/stars-my-destiny-front.git"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.3.6",
+    "graphql": "^15.4.0",
+    "graphql-tag": "^2.11.0",
+    "next": "^10.0.0",
+    "next-compose-plugins": "^2.2.1",
+    "next-seo": "^4.17.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "subscriptions-transport-ws": "^0.9.18"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.19.4",
+    "@graphql-codegen/typescript": "^1.19.0",
+    "@graphql-codegen/typescript-operations": "^1.17.12",
+    "@graphql-codegen/typescript-react-apollo": "^2.2.1",
+    "@next/bundle-analyzer": "^10.0.8",
+    "@types/node": "^14.14.11",
+    "@types/react": "^16.14.2",
+    "@types/react-dom": "^17.0.0",
+    "@types/webpack": "^4.41.25",
+    "@types/ws": "^7.4.0",
+    "typescript": "^4.1.2",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
+    "eslint": "^7.12.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.21.5",
+    "prettier": "^2.1.2",
+    "ts-node": "^9.1.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elfiyang16/stars-my-destiny-front/issues"
+  },
+  "homepage": "https://github.com/elfiyang16/stars-my-destiny-front#readme"
+}
