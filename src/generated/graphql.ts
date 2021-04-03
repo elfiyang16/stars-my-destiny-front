@@ -16,13 +16,6 @@ export type Scalars = {
   Upload: any;
 };
 
-
-
-
-
-
-
-
 export type Capsule = {
   __typename?: 'Capsule';
   id?: Maybe<Scalars['ID']>;
@@ -74,7 +67,6 @@ export type MissionsFind = {
   payload_id?: Maybe<Scalars['String']>;
 };
 
-
 export type Result = {
   __typename?: 'Result';
   totalCount?: Maybe<Scalars['Int']>;
@@ -116,7 +108,6 @@ export type Query = {
   dragon?: Maybe<Dragon>;
 };
 
-
 export type QueryCapsulesArgs = {
   find?: Maybe<CapsulesFind>;
   limit?: Maybe<Scalars['Int']>;
@@ -125,11 +116,9 @@ export type QueryCapsulesArgs = {
   sort?: Maybe<Scalars['String']>;
 };
 
-
 export type QueryCapsuleArgs = {
   id: Scalars['ID'];
 };
-
 
 export type QueryMissionsArgs = {
   find?: Maybe<MissionsFind>;
@@ -137,17 +126,14 @@ export type QueryMissionsArgs = {
   offset?: Maybe<Scalars['Int']>;
 };
 
-
 export type QueryMissionArgs = {
   id: Scalars['ID'];
 };
-
 
 export type QueryDragonsArgs = {
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
-
 
 export type QueryDragonArgs = {
   id: Scalars['ID'];
@@ -194,9 +180,8 @@ export type Dragon = {
 
 export enum CacheControlScope {
   Public = 'PUBLIC',
-  Private = 'PRIVATE'
+  Private = 'PRIVATE',
 }
-
 
 export type Location = {
   __typename?: 'Location';
