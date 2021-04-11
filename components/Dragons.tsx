@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-// import Link from 'next/link';
 import { ActionLoader } from './ActionLoader';
 import { ErrorLoader } from './ErrorLoader';
 import { GET_ALL_DRAGONS } from '../src/queries';
@@ -39,7 +38,6 @@ export const Dragons: React.FC = () => {
       {dragons?.length > 0 &&
         dragons.map((dragon: Dragon, index: number) => (
           <React.Fragment key={`${dragon.id}-${index}`}>
-            {/* <Link href="/posts/[...slug]" as={`/posts/${post.slug}`}> */}
             <p>**************</p>
 
             <p>Name: {dragon.name}</p>
@@ -53,8 +51,6 @@ export const Dragons: React.FC = () => {
             <p>Return_payload_mass: {dragon.return_payload_mass!.kg}</p>
             <p>__typename: {dragon.__typename}</p>
             <p>===============</p>
-
-            {/* </Link> */}
           </React.Fragment>
         ))}
     </div>
