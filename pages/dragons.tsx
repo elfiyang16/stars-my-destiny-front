@@ -8,6 +8,10 @@ const DragonsPage: NextPage = () => {
       <Link href={'/capsules'}>
         <a>Capsules</a>
       </Link>
+      <br />
+      <Link href={'/missions'}>
+        <a>Missions</a>
+      </Link>
       <Dragons />
     </div>
   );
