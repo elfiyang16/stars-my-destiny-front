@@ -1,7 +1,7 @@
 import { AppProps } from 'next/app';
 import { FC } from 'react';
 import { ApolloProvider } from '@apollo/client';
-import { useApollo } from '../services';
+import { useApollo } from '../src/services';
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const apolloClient = useApollo(pageProps.initialApolloState);

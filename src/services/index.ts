@@ -2,11 +2,13 @@ import { useMemo } from 'react';
 import { ApolloClient, ApolloLink, split, InMemoryCache, NormalizedCacheObject, createHttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
+const DEV_ENDPOINT = 'http://localhost:6688/graphql';
+const DEV_WS_ENDPOINT = 'ws://localhost:6688/graphql';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null;
 
 const httpLink = createHttpLink({
-  uri: process.env.NODE_ENV === 'development' ? process.env.DEV_ENDPOINT : process.env.NEXT_PUBLIC_PROD_ENDPOINT, // Server URL (must be absolute)
+  uri: process.env.NODE_ENV === 'development' ? DEV_ENDPOINT : process.env.NEXT_PUBLIC_PROD_ENDPOINT, // Server URL (must be absolute)
   fetchOptions: {
     credentials: 'include', // Additional fetch() options like `credentials` or `headers`,
   },
@@ -17,7 +19,7 @@ const wsLink = process.browser
       // if you instantiate in the server, the error will be thrown
       uri:
         process.env.NODE_ENV === 'development'
-          ? (process.env.DEV_WS_ENDPOINT as string)
+          ? (DEV_WS_ENDPOINT as string)
           : (process.env.NEXT_PUBLIC_PROD_WS_ENDPOINT as string),
       options: {
         reconnect: true,
