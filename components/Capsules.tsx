@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { ActionLoader } from './ActionLoader';
 import { ErrorLoader } from './ErrorLoader';
 import { GET_ALL_CAPSULES } from '../src/queries';
 import { Capsule } from '../src/generated/graphql';
+import { Capsule as GetCapsule } from './Capsule';
 
 export const Capsules: React.FC = () => {
+  const [id, setId] = useState<string | null>(null);
+
   const { data, loading, error } = useQuery(GET_ALL_CAPSULES);
   console.log(data);
 
-  if (loading) return <ActionLoader />;
+  const handleOnChange = (e: any) => setId(e.target.value);
 
+  if (loading) return <ActionLoader />;
   if (error) return <ErrorLoader />;
 
   let capsules;
@@ -21,6 +25,14 @@ export const Capsules: React.FC = () => {
 
   return (
     <div>
+      <h4> Get Capsule By Id </h4>
+      <label>Id: </label>
+      <input onChange={handleOnChange} />
+      <p>======================</p>
+      {id && <GetCapsule id={id} />}
+      <p>======================</p>
+      <h4> All Capsules </h4>
+
       {capsules?.length > 0 &&
         capsules.map((capsule: Capsule, index: number) => (
           <React.Fragment key={`${capsule.id}-${index}`}>
