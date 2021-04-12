@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useApolloClient, NetworkStatus } from '@apollo/client';
 import { ActionLoader } from './ActionLoader';
 import { ErrorLoader } from './ErrorLoader';
 import { GET_ALL_MISSIONS } from '../src/queries';
@@ -7,15 +7,28 @@ import { Mission } from '../src/generated/graphql';
 import { Mission as GetMission } from './Mission';
 
 export const Missions: React.FC = () => {
-  const [id, setId] = useState<string | null>(null);
+  const client = useApolloClient();
 
-  const { data, loading, error } = useQuery(GET_ALL_MISSIONS);
+  const [id, setId] = useState<string | null>(null);
+  const [complete, setComplete] = useState<boolean | null>(false);
+
+  const { networkStatus, data, loading, error, refetch } = useQuery(GET_ALL_MISSIONS, {
+    fetchPolicy: 'cache-and-network' /*default: cache-only */,
+    nextFetchPolicy: 'cache-only',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      data.missions && setComplete(true);
+    },
+    onError: (error) => console.error('Error creating a post', error),
+    client: client,
+  });
   console.log(data);
 
   const handleOnChange = (e: any) => setId(e.target.value);
 
   if (loading) return <ActionLoader />;
   if (error) return <ErrorLoader />;
+  if (networkStatus === NetworkStatus.refetch) console.log('Refetching!');
 
   let missions;
 
@@ -32,7 +45,8 @@ export const Missions: React.FC = () => {
       {id && <GetMission id={id} />}
       <p>======================</p>
       <h4> All Missions </h4>
-      {missions?.length > 0 &&
+      <button onClick={() => refetch()}>Refetch!</button>
+      {complete &&
         missions.map((mission: Mission, index: number) => (
           <React.Fragment key={`${mission.id}-${index}`}>
             <p>**************</p>
