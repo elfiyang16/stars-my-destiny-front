@@ -1,8 +1,17 @@
 import { useMemo } from 'react';
-import { ApolloClient, ApolloLink, split, InMemoryCache, NormalizedCacheObject, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  split,
+  InMemoryCache,
+  NormalizedCacheObject,
+  createHttpLink,
+  operationName,
+} from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 const DEV_ENDPOINT = 'http://localhost:6688/graphql';
+
 const DEV_WS_ENDPOINT = 'ws://localhost:6688/graphql';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null;
@@ -30,7 +39,11 @@ const wsLink = process.browser
     })
   : null;
 
-const terminalLink = process.browser
+const thirdPartyLink = createHttpLink({
+  uri: 'https://api.spacex.land/graphql/',
+});
+
+const spaceXLink = process.browser
   ? split(
       ({ query }) => {
         const definition = getMainDefinition(query);
@@ -40,6 +53,8 @@ const terminalLink = process.browser
       httpLink
     )
   : httpLink;
+
+const terminalLink = split((op) => op.getContext().clientName === 'thirdParty', thirdPartyLink, spaceXLink);
 
 function createApolloClient() {
   return new ApolloClient({
