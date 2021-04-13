@@ -1,3 +1,5 @@
+import { UUID } from '../../types/custom';
+
 import gql from 'graphql-tag';
 
 export const GET_ALL_CAPSULES = gql(`
@@ -113,3 +115,26 @@ query getDragonById($id: ID!){
   }
 }
 `);
+
+export const INSERT_USER = gql(`
+mutation insertUser($objects: [users_insert_input!]!) {
+  insert_users(objects:$objects
+     ){
+    returning{
+      id
+      name
+      rocket
+      timestamp
+      twitter
+    }
+  }
+}
+`);
+
+export interface IInsertUserInput {
+  id: UUID;
+  name: string | undefined;
+  rocket: string | undefined;
+  timestamp: Date;
+  twitter: string | null;
+}
