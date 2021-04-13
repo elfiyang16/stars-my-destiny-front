@@ -12,6 +12,10 @@ const DragonsPage: NextPage = () => {
       <Link href={'/missions'}>
         <a>Missions</a>
       </Link>
+      <br />
+      <Link href={'/users'}>
+        <a>Users</a>
+      </Link>
       <Dragons />
     </div>
   );
