@@ -131,10 +131,39 @@ mutation insertUser($objects: [users_insert_input!]!) {
 }
 `);
 
+export const GET_ALL_USERS = gql(`
+ query getAllUsers($timestamp:order_by,$name: order_by, $limit: Int) {
+  users(order_by: {timestamp: $timestamp, name: $name}, limit: $limit) {
+    id
+    name
+    rocket
+    timestamp
+    twitter
+  }
+}
+`);
+
 export interface IInsertUserInput {
   id: UUID;
   name: string | undefined;
   rocket: string | undefined;
   timestamp: Date;
   twitter: string | null;
+}
+
+export interface IGetAllUserFilter {
+  order_by: {
+    timestamp: UserOrderBy;
+    name: UserOrderBy;
+  };
+  limit: number | null;
+}
+
+export enum UserOrderBy {
+  asc = 'asc',
+  asc_nulls_first = 'asc_nulls_first',
+  asc_nulls_last = 'asc_nulls_last',
+  desc = 'desc',
+  desc_nulls_first = 'desc_nulls_first',
+  desc_nulls_last = 'desc_nulls_last',
 }

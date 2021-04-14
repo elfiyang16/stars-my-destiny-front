@@ -7,6 +7,7 @@ import { ActionLoader } from './ActionLoader';
 import { ErrorLoader } from './ErrorLoader';
 
 export const InsertUser: React.FC = () => {
+  let userInput: IInsertUserInput;
   const [name, setName] = useState<string | undefined>(undefined);
   const [rocket, setRocket] = useState<string | undefined>(undefined);
 
@@ -60,13 +61,16 @@ export const InsertUser: React.FC = () => {
           e.preventDefault();
           const id = uuidv4() as UUID;
           const timestamp = (new Date().toISOString() as unknown) as Date;
-          insertUser({ variables: { objects: { id, name, rocket, timestamp, twitter: null } } });
+          userInput = { id, name, rocket, timestamp, twitter: null };
+          insertUser({ variables: { objects: userInput } });
           setName(undefined);
           setRocket(undefined);
         }}
       >
-        <input type="name" name="name" onChange={(e: any) => setName(e.target.value)} />
-        <input type="rocket" name="rocket" onChange={(e: any) => setRocket(e.target.value)} />
+        Name: <input type="name" name="name" onChange={(e: any) => setName(e.target.value)} />
+        <br />
+        Rocket: <input type="rocket" name="rocket" onChange={(e: any) => setRocket(e.target.value)} />
+        <br />
         <button type="submit">Insert User</button>
       </form>
       <p>=================</p>
