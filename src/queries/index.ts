@@ -131,6 +131,19 @@ mutation insertUser($objects: [users_insert_input!]!) {
 }
 `);
 
+export const UPDATE_USER = gql(`
+mutation updateUser($_set: users_set_input, $_eq:uuid){
+  update_users(_set:$_set, where: {id: {_eq:$_eq}}) {
+    returning {
+      id
+      name
+      rocket
+      timestamp
+    }
+  }
+}
+`);
+
 export const GET_ALL_USERS = gql(`
  query getAllUsers($timestamp:order_by,$name: order_by, $limit: Int) {
   users(order_by: {timestamp: $timestamp, name: $name}, limit: $limit) {
@@ -150,6 +163,8 @@ export interface IInsertUserInput {
   timestamp: Date;
   twitter: string | null;
 }
+
+export type IUpdateUserInputPartial = Omit<IInsertUserInput, 'id' | 'timestamp' | 'twitter'>;
 
 export interface IGetAllUserFilter {
   order_by: {

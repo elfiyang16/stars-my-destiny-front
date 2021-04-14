@@ -12,15 +12,15 @@ export interface IUser {
   rocket: string;
 }
 
-export const Users: React.FC = () => {
-  const getAllUserFilter: IGetAllUserFilter = {
-    order_by: {
-      timestamp: UserOrderBy.asc,
-      name: UserOrderBy.asc,
-    },
-    limit: null,
-  };
+export const getAllUserFilter: IGetAllUserFilter = {
+  order_by: {
+    timestamp: UserOrderBy.asc,
+    name: UserOrderBy.asc,
+  },
+  limit: null,
+};
 
+export const Users: React.FC = () => {
   const { loading, error, data } = useQuery(GET_ALL_USERS, {
     context: { clientName: 'thirdParty' },
     variables: { getAllUserFilter },
