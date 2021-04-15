@@ -11,6 +11,7 @@ interface IMission {
 export const Mission: React.FC<IMission> = ({ id }) => {
   const { loading, error, data } = useQuery(GET_MISSION_BY_ID, {
     variables: { id },
+    errorPolicy: 'all',
   });
 
   if (loading) return <ActionLoader />;

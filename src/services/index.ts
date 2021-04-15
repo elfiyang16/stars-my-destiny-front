@@ -1,20 +1,22 @@
 import { useMemo } from 'react';
-import {
-  ApolloClient,
-  ApolloLink,
-  split,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink,
-  operationName,
-} from '@apollo/client';
+import { ApolloClient, ApolloLink, split, InMemoryCache, NormalizedCacheObject, createHttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
+import { onError, ErrorResponse } from '@apollo/client/link/error';
 const DEV_ENDPOINT = 'http://localhost:6688/graphql';
 
 const DEV_WS_ENDPOINT = 'ws://localhost:6688/graphql';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null;
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+    );
+  }
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
 
 const httpLink = createHttpLink({
   uri: process.env.NODE_ENV === 'development' ? DEV_ENDPOINT : process.env.NEXT_PUBLIC_PROD_ENDPOINT, // Server URL (must be absolute)
@@ -59,7 +61,7 @@ const terminalLink = split((op) => op.getContext().clientName === 'thirdParty', 
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: terminalLink,
+    link: ApolloLink.from([errorLink, terminalLink]),
     cache: new InMemoryCache(),
   });
 }
