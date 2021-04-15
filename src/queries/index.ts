@@ -1,5 +1,4 @@
 import { UUID } from '../../types/custom';
-
 import gql from 'graphql-tag';
 
 export const GET_ALL_CAPSULES = gql(`
@@ -116,6 +115,15 @@ query getDragonById($id: ID!){
 }
 `);
 
+export const CORE_USER_FIELDS = gql(`
+fragment CoreUserFields on users {
+  id
+  name
+  rocket
+  timestamp
+}
+`);
+
 export const INSERT_USER = gql(`
 mutation insertUser($objects: [users_insert_input!]!) {
   insert_users(objects:$objects
@@ -167,10 +175,8 @@ export interface IInsertUserInput {
 export type IUpdateUserInputPartial = Omit<IInsertUserInput, 'id' | 'timestamp' | 'twitter'>;
 
 export interface IGetAllUserFilter {
-  order_by: {
-    timestamp: UserOrderBy;
-    name: UserOrderBy;
-  };
+  timestamp: UserOrderBy;
+  name: UserOrderBy;
   limit: number | null;
 }
 
