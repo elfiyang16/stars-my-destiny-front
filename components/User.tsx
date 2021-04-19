@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { UUID } from '../types/custom';
 import { useMutation } from '@apollo/client';
-import { INSERT_USER, IInsertUserInput, GET_ALL_USERS, IUpdateUserInputPartial, UPDATE_USER } from '../src/queries';
+import {
+  INSERT_USER,
+  IInsertUserInput,
+  GET_ALL_USERS,
+  CORE_USER_FIELDS,
+  IUpdateUserInputPartial,
+  UPDATE_USER,
+} from '../src/queries';
 import { ActionLoader } from './ActionLoader';
 import { ErrorLoader } from './ErrorLoader';
 import { getAllUserFilter } from './Users';
@@ -16,18 +23,67 @@ export const InsertUser: React.FC = () => {
     context: { clientName: 'thirdParty' },
     update(cache, { data: { insert_users } }) {
       const insertedUser = insert_users.returning[0];
-      const existingUsers = cache.readQuery({
-        query: GET_ALL_USERS,
-        variables: { getAllUserFilter },
-      });
-      if (existingUsers && insertedUser) {
-        cache.writeQuery({
-          query: GET_ALL_USERS,
-          data: {
-            users: [...(existingUsers as any)?.users, insertedUser],
-          },
-        });
-      }
+      /**
+       * what happens if the query has not yet been fetched,
+       * so is not in your cache as you supposed?
+       * proxy.readQuery would throw an error and the application would crash.
+       */
+      // try {
+      //   const existingUsers = cache.readQuery({
+      //     query: GET_ALL_USERS,
+      //     // note variable below must match the original query variables otherwise starts a new cache
+      //     variables: {
+      //       timestamp: getAllUserFilter.timestamp,
+      //       name: getAllUserFilter.name,
+      //       limit: getAllUserFilter.limit,
+      //     },
+      //   });
+      //   if (existingUsers && insertedUser) {
+      //     cache.writeQuery({
+      //       query: GET_ALL_USERS,
+      //       // note variable below must match the original query variables otherwise can't write into existingUsers
+      //       variables: {
+      //         timestamp: getAllUserFilter.timestamp,
+      //         name: getAllUserFilter.name,
+      //         limit: getAllUserFilter.limit,
+      //       },
+      //       data: {
+      //         users: [...(existingUsers as any)?.users, insertedUser],
+      //       },
+      //     });
+      //   }
+      // } catch (err) {
+      //   console.log('Cache update user insert\n', err);
+      // }
+      // more thorough approach comparing to above:
+      // use of cache.modify to circumvent merge
+      // write into fragment which is faster
+      // safe check
+
+      // try {
+      //   cache.modify({
+      //     // id: cache.identify(insertedUser),
+      //     fields: {
+      //       users(existingUserRefs = [], { readField }) {
+      //         const newUserRef = cache.writeFragment({
+      //           data: insertedUser,
+      //           // Fuck! also need variables here! which match the original ones for GET_PARTIAL_ALL_USERS in Users.tsx
+      //           variables: { order_by: { name: 'asc', timestamp: 'asc' } },
+      //           fragment: CORE_USER_FIELDS,
+      //         });
+
+      //         // safe check if the new user exist, we don't write again
+      //         if (existingUserRefs.some((ref: any) => readField('id', ref) === insertedUser.id)) {
+      //           return existingUserRefs;
+      //         }
+
+      //         return [...existingUserRefs, newUserRef];
+      //       },
+      //     },
+      //   });
+      // } catch (err) {
+      //   console.log('Cache update user insert fragment\n', err);
+      // }
     },
   });
 
@@ -35,12 +91,12 @@ export const InsertUser: React.FC = () => {
   if (error) return <ErrorLoader />;
   let user;
   if (data) {
-    console.log(data);
     user = data.insert_users.returning[0];
   }
 
   return (
     <div>
+      <p>=================</p>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -58,7 +114,6 @@ export const InsertUser: React.FC = () => {
         <br />
         <button type="submit">Insert User</button>
       </form>
-      <p>=================</p>
       <h4>Inserted User</h4>
 
       {user && (
@@ -80,33 +135,18 @@ export const UpdateUser: React.FC = () => {
 
   const [updateUser, { loading, error, data }] = useMutation(UPDATE_USER, {
     context: { clientName: 'thirdParty' },
-    // update(cache, { data: { insert_users } }) {
-    //   const insertedUser = insert_users.returning[0];
-    //   const existingUsers = cache.readQuery({
-    //     query: GET_ALL_USERS,
-    //     variables: { getAllUserFilter },
-    //   });
-    //   if (existingUsers && insertedUser) {
-    //     cache.writeQuery({
-    //       query: GET_ALL_USERS,
-    //       data: {
-    //         users: [...(existingUsers as any)?.users, insertedUser],
-    //       },
-    //     });
-    //   }
-    // },
   });
 
   if (loading) return <ActionLoader />;
   if (error) return <ErrorLoader />;
   let user;
   if (data) {
-    console.log(data);
     user = data.update_users.returning[0];
   }
 
   return (
     <div>
+      <p>=================</p>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -134,7 +174,6 @@ export const UpdateUser: React.FC = () => {
         <br />
         <button type="submit">Update User</button>
       </form>
-      <p>=================</p>
       <h4>Updated User</h4>
       {user && (
         <div>

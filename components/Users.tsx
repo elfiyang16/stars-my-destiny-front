@@ -24,7 +24,7 @@ export const getAllUserFilter: IGetAllUserFilter = {
 /* default param order_by, limit */
 export const GET_PARTIAL_ALL_USERS = gql`
   ${CORE_USER_FIELDS}
-  query getPartialAllUsers($timestamp: order_by = asc, $name: order_by = asc, $limit: Int = 3) {
+  query getPartialAllUsers($timestamp: order_by = asc, $name: order_by = asc, $limit: Int) {
     users(order_by: { timestamp: $timestamp, name: $name }, limit: $limit) {
       ...CoreUserFields
     }
@@ -51,7 +51,6 @@ export const Users: React.FC = () => {
   if (error) return <ErrorLoader />;
   let users;
   if (data) {
-    console.log(data);
     users = data.users;
   }
 
@@ -59,7 +58,6 @@ export const Users: React.FC = () => {
   if (errorPartial) return <ErrorLoader />;
   let usersPartial;
   if (dataPartial) {
-    console.log(dataPartial);
     usersPartial = dataPartial.users;
   }
 
@@ -72,7 +70,9 @@ export const Users: React.FC = () => {
         users.map((user: IUser, index: number) => (
           <div key={`${user.id}-${index}`}>
             <p>Id: {user.id}</p>
-            <p>Name: {user.name}</p>
+            <p>
+              <b>Name: {user.name}</b>
+            </p>
             <p>Rocket: {user.rocket}</p>
             <p>Create time: {user.timestamp}</p>
             <p>Twitter: {user.twitter}</p>
@@ -85,7 +85,9 @@ export const Users: React.FC = () => {
         usersPartial.map((user: IUser, index: number) => (
           <div key={`${user.id}-${index}`}>
             <p>Id: {user.id}</p>
-            <p>Name: {user.name}</p>
+            <p>
+              <b>Name: {user.name}</b>
+            </p>
             <p>Rocket: {user.rocket}</p>
             <p>Create time: {user.timestamp}</p>
             <p>Typename: {user.__typename}</p>

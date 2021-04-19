@@ -58,11 +58,108 @@ const spaceXLink = process.browser
 
 const terminalLink = split((op) => op.getContext().clientName === 'thirdParty', thirdPartyLink, spaceXLink);
 
+const cache = new InMemoryCache({
+  typePolicies: {
+    Capsule: {
+      keyFields: ['id', 'type'],
+      fields: {
+        landings: {
+          read(landingTimes = 0) {
+            // give it a default 0 :)
+            return `${landingTimes} times`; /* field level middleware on client side */
+          },
+        },
+        /* missions field return a CapsuleMission type which only has name + flight,
+        but not id so let's create for this non-normalized object.
+
+        Instead of blindly replacing the existing missions array with the incoming array, 
+        below code concatenates the missions arrays, 
+        while also checking for duplicate mission by checking its name field 
+        merging the fields of any repeated mission objects.
+
+        Alternativley, we can set up keyFields on Mission type separately.
+        */
+        missions: {
+          /* function when write cache into missions field */
+          merge(existing: any[], incoming: any[], { readField, mergeObjects }) {
+            const merged: any[] = existing ? existing.slice(0) : []; // we return a copy of original array existing.slice(0)
+            const missionNameToIndex: Record<string, number> = Object.create(null);
+            if (existing) {
+              existing.forEach((mission, index) => {
+                missionNameToIndex[readField<string>('name', mission)!] = index; // e.g. {"CRS-8":1}
+              });
+            }
+            incoming.forEach((mission) => {
+              const name = readField<string>('name', mission);
+              const index = missionNameToIndex[name!];
+              //If it's number, then the index exists
+              if (typeof index === 'number') {
+                // merge mission as incoming value into merged[index] === existing
+                merged[index] = mergeObjects(merged[index], mission);
+              } else {
+                //Else, the index is undefined for that mission name
+                //Means it's first time we've seen this mission in this array.
+                missionNameToIndex[name!] = merged.length; // assign the index to the name, which is the array length
+                merged.push(mission);
+              }
+            });
+            return merged;
+          },
+        },
+      },
+    },
+    Dragon: {
+      // it already has id field so it's fine to leave as it is
+    },
+    users: {
+      fields: {
+        timestamp(timestamp) {
+          return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' ');
+        },
+      },
+    },
+    // Mutation: {
+    //   fields: {
+    //     insert_users: {
+    //       /* whenever insert_users is about to write data to the cache (the merge function),
+    //       instead of just returning the incoming data,
+    //       we want to update the users query with that incoming data as well.
+    //       Now we can call create mutations like update mutations
+    //        */
+    //       merge(_, incoming, { cache, readField, variables }) {
+    //         cache.modify({
+    //           fields: {
+    //             users(existing = [], { readField }) {
+    //                       const newUserRef = cache.writeQuery({
+    //                         data: incoming.returning[0],
+    //                             variables: {
+    //                               timestamp: getAllUserFilter.timestamp,
+    //                               name: getAllUserFilter.name,
+    //                               limit: getAllUserFilter.limit,
+    //                             },
+    //                       });
+
+    //                       // safe check if the new user exist, we don't write again
+    //                       if (existingUserRefs.some((ref: any) => readField('id', ref) === insertedUser.id)) {
+    //                         return existingUserRefs;
+    //                       }
+
+    //               return [...existing, incoming];
+    //             },
+    //           },
+    //         });
+    //         return incoming;
+    //       },
+    // },
+    // },
+    // },
+  },
+});
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: ApolloLink.from([errorLink, terminalLink]),
-    cache: new InMemoryCache(),
+    cache: cache,
   });
 }
 
