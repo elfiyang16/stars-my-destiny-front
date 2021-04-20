@@ -3,6 +3,7 @@ import { ApolloClient, ApolloLink, split, InMemoryCache, NormalizedCacheObject, 
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { onError, ErrorResponse } from '@apollo/client/link/error';
+
 const DEV_ENDPOINT = 'http://localhost:6688/graphql';
 
 const DEV_WS_ENDPOINT = 'ws://localhost:6688/graphql';
@@ -118,6 +119,10 @@ const cache = new InMemoryCache({
         },
       },
     },
+    /* COMMENT OUT BELOW AS 
+    OTHERWISE the cache implememntation in User file is duplicated,
+    but below is better
+     */
     // Mutation: {
     //   fields: {
     //     insert_users: {
@@ -126,32 +131,18 @@ const cache = new InMemoryCache({
     //       we want to update the users query with that incoming data as well.
     //       Now we can call create mutations like update mutations
     //        */
-    //       merge(_, incoming, { cache, readField, variables }) {
+    //       merge(_, incoming, { cache }) {
     //         cache.modify({
     //           fields: {
-    //             users(existing = [], { readField }) {
-    //                       const newUserRef = cache.writeQuery({
-    //                         data: incoming.returning[0],
-    //                             variables: {
-    //                               timestamp: getAllUserFilter.timestamp,
-    //                               name: getAllUserFilter.name,
-    //                               limit: getAllUserFilter.limit,
-    //                             },
-    //                       });
-
-    //                       // safe check if the new user exist, we don't write again
-    //                       if (existingUserRefs.some((ref: any) => readField('id', ref) === insertedUser.id)) {
-    //                         return existingUserRefs;
-    //                       }
-
-    //               return [...existing, incoming];
+    //             users(existing = []) {
+    //               return [...existing, incoming.returning[0]];
     //             },
     //           },
     //         });
     //         return incoming;
     //       },
-    // },
-    // },
+    //     },
+    //   },
     // },
   },
 });

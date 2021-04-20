@@ -28,62 +28,62 @@ export const InsertUser: React.FC = () => {
        * so is not in your cache as you supposed?
        * proxy.readQuery would throw an error and the application would crash.
        */
-      // try {
-      //   const existingUsers = cache.readQuery({
-      //     query: GET_ALL_USERS,
-      //     // note variable below must match the original query variables otherwise starts a new cache
-      //     variables: {
-      //       timestamp: getAllUserFilter.timestamp,
-      //       name: getAllUserFilter.name,
-      //       limit: getAllUserFilter.limit,
-      //     },
-      //   });
-      //   if (existingUsers && insertedUser) {
-      //     cache.writeQuery({
-      //       query: GET_ALL_USERS,
-      //       // note variable below must match the original query variables otherwise can't write into existingUsers
-      //       variables: {
-      //         timestamp: getAllUserFilter.timestamp,
-      //         name: getAllUserFilter.name,
-      //         limit: getAllUserFilter.limit,
-      //       },
-      //       data: {
-      //         users: [...(existingUsers as any)?.users, insertedUser],
-      //       },
-      //     });
-      //   }
-      // } catch (err) {
-      //   console.log('Cache update user insert\n', err);
-      // }
+      try {
+        const existingUsers = cache.readQuery({
+          query: GET_ALL_USERS,
+          // note variable below must match the original query variables otherwise starts a new cache
+          variables: {
+            timestamp: getAllUserFilter.timestamp,
+            name: getAllUserFilter.name,
+            limit: getAllUserFilter.limit,
+          },
+        });
+        if (existingUsers && insertedUser) {
+          cache.writeQuery({
+            query: GET_ALL_USERS,
+            // note variable below must match the original query variables otherwise can't write into existingUsers
+            variables: {
+              timestamp: getAllUserFilter.timestamp,
+              name: getAllUserFilter.name,
+              limit: getAllUserFilter.limit,
+            },
+            data: {
+              users: [...(existingUsers as any)?.users, insertedUser],
+            },
+          });
+        }
+      } catch (err) {
+        console.log('Cache update user insert\n', err);
+      }
       // more thorough approach comparing to above:
       // use of cache.modify to circumvent merge
       // write into fragment which is faster
       // safe check
 
-      // try {
-      //   cache.modify({
-      //     // id: cache.identify(insertedUser),
-      //     fields: {
-      //       users(existingUserRefs = [], { readField }) {
-      //         const newUserRef = cache.writeFragment({
-      //           data: insertedUser,
-      //           // Fuck! also need variables here! which match the original ones for GET_PARTIAL_ALL_USERS in Users.tsx
-      //           variables: { order_by: { name: 'asc', timestamp: 'asc' } },
-      //           fragment: CORE_USER_FIELDS,
-      //         });
+      try {
+        cache.modify({
+          // id: cache.identify(insertedUser),
+          fields: {
+            users(existingUserRefs = [], { readField }) {
+              const newUserRef = cache.writeFragment({
+                data: insertedUser,
+                // Fuck! also need variables here! which match the original ones for GET_PARTIAL_ALL_USERS in Users.tsx
+                variables: { order_by: { name: 'asc', timestamp: 'asc' } },
+                fragment: CORE_USER_FIELDS,
+              });
 
-      //         // safe check if the new user exist, we don't write again
-      //         if (existingUserRefs.some((ref: any) => readField('id', ref) === insertedUser.id)) {
-      //           return existingUserRefs;
-      //         }
+              // safe check if the new user exist, we don't write again
+              if (existingUserRefs.some((ref: any) => readField('id', ref) === insertedUser.id)) {
+                return existingUserRefs;
+              }
 
-      //         return [...existingUserRefs, newUserRef];
-      //       },
-      //     },
-      //   });
-      // } catch (err) {
-      //   console.log('Cache update user insert fragment\n', err);
-      // }
+              return [...existingUserRefs, newUserRef];
+            },
+          },
+        });
+      } catch (err) {
+        console.log('Cache update user insert fragment\n', err);
+      }
     },
   });
 
