@@ -119,6 +119,23 @@ const cache = new InMemoryCache({
         },
       },
     },
+    Query: {
+      fields: {
+        /* implement Cache-Redirect below,
+        the same can be done for dragon & capsule:
+        so whenever mission(id: xxx) gets queried, 
+        the cache will go into missions cache and try find it
+        */
+        mission(_, { args, toReference }) {
+          // return a reference that points to the mission entity
+          // that was already created in the cache when the Missions list view query ran
+          return toReference({
+            __typename: 'Mission',
+            id: args!.id,
+          });
+        },
+      },
+    },
     /* COMMENT OUT BELOW AS 
     OTHERWISE the cache implememntation in User file is duplicated,
     but below is better
