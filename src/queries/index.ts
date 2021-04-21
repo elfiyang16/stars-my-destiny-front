@@ -2,23 +2,32 @@ import { UUID } from '../../types/custom';
 import gql from 'graphql-tag';
 
 export const GET_ALL_CAPSULES = gql(`
-    query getAllCapsules {
-    capsules {
-        id
-        landings
-        original_launch
-        reuse_count
-        status
-        type
-        dragon{
-        id
-        }
-        missions{
-        flight
-        name
+  query getAllCapsules ($first: Int, $after:String) {
+  capsules(first: $first, after: $after) {
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    edges{
+      cursor
+      node{
+          id
+          landings
+          original_launch
+          reuse_count
+          status
+          type
+          dragon{
+          id
+          }
+          missions{
+          flight
+          name
         }
       }
+     }
     }
+  }
 `);
 
 export const GET_ALL_DRAGONS = gql(`

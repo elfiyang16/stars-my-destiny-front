@@ -16,6 +16,24 @@ export type Scalars = {
   Upload: any;
 };
 
+
+
+
+
+
+
+export type Address = {
+  __typename?: 'Address';
+  address?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+};
+
+export enum CacheControlScope {
+  Public = 'PUBLIC',
+  Private = 'PRIVATE'
+}
+
 export type Capsule = {
   __typename?: 'Capsule';
   id?: Maybe<Scalars['ID']>;
@@ -33,6 +51,12 @@ export type Capsule = {
   uid?: Maybe<Scalars['ID']>;
 };
 
+export type CapsuleMission = {
+  __typename?: 'CapsuleMission';
+  flight?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['String']>;
+};
+
 export type CapsulesFind = {
   id?: Maybe<Scalars['ID']>;
   landings?: Maybe<Scalars['Int']>;
@@ -43,112 +67,17 @@ export type CapsulesFind = {
   type?: Maybe<Scalars['String']>;
 };
 
-export type CapsuleMission = {
-  __typename?: 'CapsuleMission';
-  flight?: Maybe<Scalars['Int']>;
-  name?: Maybe<Scalars['String']>;
+export type CapsulesResponse = {
+  __typename?: 'CapsulesResponse';
+  edges?: Maybe<Array<Maybe<Edge>>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
-export type Mission = {
-  __typename?: 'Mission';
-  description?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['ID']>;
-  manufacturers?: Maybe<Array<Maybe<Scalars['String']>>>;
-  name?: Maybe<Scalars['String']>;
-  twitter?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  wikipedia?: Maybe<Scalars['String']>;
-};
-
-export type MissionsFind = {
-  id?: Maybe<Scalars['ID']>;
-  manufacturer?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  payload_id?: Maybe<Scalars['String']>;
-};
-
-export type Result = {
-  __typename?: 'Result';
-  totalCount?: Maybe<Scalars['Int']>;
-};
-
-export type Address = {
-  __typename?: 'Address';
-  address?: Maybe<Scalars['String']>;
-  city?: Maybe<Scalars['String']>;
-  state?: Maybe<Scalars['String']>;
-};
 
 export type Distance = {
   __typename?: 'Distance';
   feet?: Maybe<Scalars['Float']>;
   meters?: Maybe<Scalars['Float']>;
-};
-
-export type Force = {
-  __typename?: 'Force';
-  kN?: Maybe<Scalars['Float']>;
-  lbf?: Maybe<Scalars['Float']>;
-};
-
-export type Link = {
-  __typename?: 'Link';
-  article?: Maybe<Scalars['String']>;
-  reddit?: Maybe<Scalars['String']>;
-  wikipedia?: Maybe<Scalars['String']>;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  capsules?: Maybe<Array<Maybe<Capsule>>>;
-  capsule?: Maybe<Capsule>;
-  missions?: Maybe<Array<Maybe<Mission>>>;
-  mission?: Maybe<Mission>;
-  dragons?: Maybe<Array<Maybe<Dragon>>>;
-  dragon?: Maybe<Dragon>;
-};
-
-export type QueryCapsulesArgs = {
-  find?: Maybe<CapsulesFind>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order?: Maybe<Scalars['String']>;
-  sort?: Maybe<Scalars['String']>;
-};
-
-export type QueryCapsuleArgs = {
-  id: Scalars['ID'];
-};
-
-export type QueryMissionsArgs = {
-  find?: Maybe<MissionsFind>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-export type QueryMissionArgs = {
-  id: Scalars['ID'];
-};
-
-export type QueryDragonsArgs = {
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-export type QueryDragonArgs = {
-  id: Scalars['ID'];
-};
-
-export type Mass = {
-  __typename?: 'Mass';
-  kg?: Maybe<Scalars['Int']>;
-  lb?: Maybe<Scalars['Int']>;
-};
-
-export type Volume = {
-  __typename?: 'Volume';
-  cubic_feet?: Maybe<Scalars['Int']>;
-  cubic_meters?: Maybe<Scalars['Int']>;
 };
 
 export type Dragon = {
@@ -178,10 +107,25 @@ export type Dragon = {
   uid?: Maybe<Scalars['ID']>;
 };
 
-export enum CacheControlScope {
-  Public = 'PUBLIC',
-  Private = 'PRIVATE',
-}
+export type Edge = {
+  __typename?: 'Edge';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<Capsule>;
+};
+
+export type Force = {
+  __typename?: 'Force';
+  kN?: Maybe<Scalars['Float']>;
+  lbf?: Maybe<Scalars['Float']>;
+};
+
+
+export type Link = {
+  __typename?: 'Link';
+  article?: Maybe<Scalars['String']>;
+  reddit?: Maybe<Scalars['String']>;
+  wikipedia?: Maybe<Scalars['String']>;
+};
 
 export type Location = {
   __typename?: 'Location';
@@ -189,4 +133,90 @@ export type Location = {
   longitude?: Maybe<Scalars['Float']>;
   name?: Maybe<Scalars['String']>;
   region?: Maybe<Scalars['String']>;
+};
+
+export type Mass = {
+  __typename?: 'Mass';
+  kg?: Maybe<Scalars['Int']>;
+  lb?: Maybe<Scalars['Int']>;
+};
+
+export type Mission = {
+  __typename?: 'Mission';
+  description?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  manufacturers?: Maybe<Array<Maybe<Scalars['String']>>>;
+  name?: Maybe<Scalars['String']>;
+  twitter?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  wikipedia?: Maybe<Scalars['String']>;
+};
+
+export type MissionsFind = {
+  id?: Maybe<Scalars['ID']>;
+  manufacturer?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  payload_id?: Maybe<Scalars['String']>;
+};
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']>;
+  hasNextPage?: Maybe<Scalars['Boolean']>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  capsules?: Maybe<CapsulesResponse>;
+  capsule?: Maybe<Capsule>;
+  missions?: Maybe<Array<Maybe<Mission>>>;
+  mission?: Maybe<Mission>;
+  dragons?: Maybe<Array<Maybe<Dragon>>>;
+  dragon?: Maybe<Dragon>;
+};
+
+
+export type QueryCapsulesArgs = {
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryCapsuleArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryMissionsArgs = {
+  find?: Maybe<MissionsFind>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryMissionArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryDragonsArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryDragonArgs = {
+  id: Scalars['ID'];
+};
+
+export type Result = {
+  __typename?: 'Result';
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+
+export type Volume = {
+  __typename?: 'Volume';
+  cubic_feet?: Maybe<Scalars['Int']>;
+  cubic_meters?: Maybe<Scalars['Int']>;
 };

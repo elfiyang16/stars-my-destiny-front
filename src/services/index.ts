@@ -3,6 +3,7 @@ import { ApolloClient, ApolloLink, split, InMemoryCache, NormalizedCacheObject, 
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { onError, ErrorResponse } from '@apollo/client/link/error';
+import { relayStylePagination } from '@apollo/client/utilities';
 
 const DEV_ENDPOINT = 'http://localhost:6688/graphql';
 
@@ -134,6 +135,9 @@ const cache = new InMemoryCache({
             id: args!.id,
           });
         },
+        /* implement Relay style pagination
+         */
+        capsules: relayStylePagination(),
       },
     },
     /* COMMENT OUT BELOW AS 

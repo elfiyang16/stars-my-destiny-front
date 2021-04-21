@@ -6,21 +6,33 @@ import { GET_ALL_CAPSULES } from '../src/queries';
 import { Capsule } from '../src/generated/graphql';
 import { Capsule as GetCapsule } from './Capsule';
 
-export const Capsules: React.FC = () => {
-  const [id, setId] = useState<string | null>(null);
+interface ICapsuleNode {
+  node: Capsule;
+}
 
-  const { data, loading, error } = useQuery(GET_ALL_CAPSULES);
+export const Capsules: React.FC = () => {
+  let capsules: {
+    node: Capsule;
+  };
+  const [id, setId] = useState<string | null>(null);
+  const first = 3; // fetch 3 rows every request
+
+  const { data, loading, error, fetchMore, networkStatus } = useQuery(GET_ALL_CAPSULES, {
+    variables: { first },
+    notifyOnNetworkStatusChange: true,
+  });
   console.log(data);
+
+  const hasNextPage = data && data.capsules.pageInfo.hasNextPage;
+  const isRefetching = networkStatus === 3; //fetchMore
 
   const handleOnChange = (e: any) => setId(e.target.value);
 
   if (loading) return <ActionLoader />;
   if (error) return <ErrorLoader />;
 
-  let capsules;
-
   if (data) {
-    capsules = data.capsules;
+    capsules = data?.capsules.edges;
   }
 
   return (
@@ -32,21 +44,48 @@ export const Capsules: React.FC = () => {
       {id && <GetCapsule id={id} />}
       <p>======================</p>
       <h4> All Capsules </h4>
+      <CapsulesList capsules={capsules} />
+      {hasNextPage && (
+        <button
+          disabled={isRefetching}
+          onClick={() => {
+            fetchMore({
+              variables: {
+                first,
+                after: data.capsules.pageInfo.endCursor, // cursor position
+              },
+            });
+          }}
+        >
+          load more
+        </button>
+      )}
+    </div>
+  );
+};
 
-      {capsules?.length > 0 &&
-        capsules.map((capsule: Capsule, index: number) => (
-          <React.Fragment key={`${capsule.id}-${index}`}>
+const CapsulesList: React.FC<{ capsules: ICapsuleNode[] }> = ({ capsules }) => {
+  return (
+    <>
+      {capsules &&
+        capsules?.length > 0 &&
+        capsules.map((capsule, index: number) => (
+          <React.Fragment key={`${capsule.node.id}-${index}`}>
             <p>**************</p>
-            <p>__typename: {capsule.__typename}</p>
-            <p>Id: {capsule.id}</p>
-            <p>Type: {capsule.type}</p>
-            <p>Landings: {capsule.landings}</p>
-            <p>Original_launch: {capsule.original_launch}</p>
-            <p>Reuse_count: {capsule.reuse_count}</p>
-            <p>Status: {capsule.status}</p>
+            <p>__typename: {capsule.node.__typename}</p>
+            <p>Id: {capsule.node.id}</p>
+            <p>Type: {capsule.node.type}</p>
+            <p>Landings: {capsule.node.landings}</p>
+            <p>Original_launch: {capsule.node.original_launch}</p>
+            <p>Reuse_count: {capsule.node.reuse_count}</p>
+            <p>Status: {capsule.node.status}</p>
+            <p>
+              Dragon:
+              {capsule.node.dragon!.id}
+            </p>
             <div>
               Missions:
-              {capsule.missions?.map((mission: any, index: number) => (
+              {capsule.node.missions?.map((mission: any, index: number) => (
                 <React.Fragment key={`mission-capsule-${index}`}>
                   <p>{mission.__typename}</p>
                   <p>{mission.name}</p>
@@ -54,13 +93,9 @@ export const Capsules: React.FC = () => {
                 </React.Fragment>
               ))}
             </div>
-            <p>
-              Dragon:
-              {capsule.dragon!.id}
-            </p>
             <p>===============</p>
           </React.Fragment>
         ))}
-    </div>
+    </>
   );
 };
