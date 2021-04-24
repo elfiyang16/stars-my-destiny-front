@@ -103,7 +103,20 @@ export const InsertUser: React.FC = () => {
           const id = uuidv4() as UUID;
           const timestamp = (new Date().toISOString() as unknown) as Date;
           userInput = { id, name, rocket, timestamp, twitter: null };
-          insertUser({ variables: { objects: userInput } });
+          insertUser({
+            variables: { objects: userInput },
+            optimisticResponse: {
+              insert_users: {
+                returning: {
+                  id,
+                  name,
+                  rocket,
+                  timestamp,
+                  twitter: null,
+                },
+              },
+            },
+          });
           setName(undefined);
           setRocket(undefined);
         }}
