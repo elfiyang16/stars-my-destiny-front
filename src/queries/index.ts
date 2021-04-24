@@ -63,6 +63,7 @@ query getAllMissions {
     manufacturers
     twitter
     website
+    isSelected @client
   }
 }
 `);

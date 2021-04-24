@@ -1,13 +1,22 @@
 import { useMemo } from 'react';
-import { ApolloClient, ApolloLink, split, InMemoryCache, NormalizedCacheObject, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  makeVar,
+  split,
+  InMemoryCache,
+  NormalizedCacheObject,
+  createHttpLink,
+} from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { onError, ErrorResponse } from '@apollo/client/link/error';
 import { relayStylePagination } from '@apollo/client/utilities';
 
 const DEV_ENDPOINT = 'http://localhost:6688/graphql';
-
 const DEV_WS_ENDPOINT = 'ws://localhost:6688/graphql';
+
+export const currentSelectedMissionIds = makeVar<any[]>([]);
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null;
 
@@ -112,6 +121,17 @@ const cache = new InMemoryCache({
     },
     Dragon: {
       // it already has id field so it's fine to leave as it is
+    },
+    Mission: {
+      fields: {
+        isSelected: {
+          read(_ = false, { readField }) {
+            const missionId = readField('id');
+            const isSelected = !!currentSelectedMissionIds().find((id) => id === missionId);
+            return isSelected;
+          },
+        },
+      },
     },
     users: {
       fields: {
